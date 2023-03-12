@@ -59,6 +59,7 @@ GO
 GRANT DELETE ON AdventureWorks2012.Person.Address to HRPerson;
 GRANT INSERT ON AdventureWorks2012.Person.Address to HRPerson;
 GRANT SELECT ON AdventureWorks2012.Person.AddressType to HRPerson;
+GRANT SELECT ON AdventureWorks2012.Sales.vSalesPersonSalesByFiscalYears to HRPerson;
 
 EXECUTE AS user = 'HRPerson';
     SELECT 'SELECT', SCHEMA_NAME(schema_id) + '.' + name as Table_Name
