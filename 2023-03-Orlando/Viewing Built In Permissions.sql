@@ -1,14 +1,20 @@
--- See Server Level Permissions available
+
+
+-- See Server Level Built-in Permissions available
 SELECT * FROM sys.fn_builtin_permissions('SERVER') ORDER BY permission_name;
 
--- Database Level Permissions available
+-- Database Level Built-in Permissions available
 SELECT * FROM sys.fn_builtin_permissions('DATABASE') ORDER BY permission_name;
 
--- Schema Level Permissions available
+-- Schema Level Built-in Permissions available
 SELECT * FROM sys.fn_builtin_permissions('SCHEMA') ORDER BY permission_name;
 
--- Object Level Permissions available
+-- Object Level Built-in Permissions available
 SELECT * FROM sys.fn_builtin_permissions('OBJECT') ORDER BY permission_name;
+
+-- All Built-in Permissions available
+SELECT * FROM sys.fn_builtin_permissions('') ORDER BY permission_name;
+
 
 -- https://learn.microsoft.com/en-us/sql/relational-databases/system-functions/sys-fn-builtin-permissions-transact-sql?view=sql-server-ver16
 
