@@ -56,7 +56,7 @@ GO
 
 -- Grant SELECT on two table and then list all select permissions 
 
-GRANT SELECT ON AdventureWorks2012.Person.Address to HRPerson;
+GRANT DELETE ON AdventureWorks2012.Person.Address to HRPerson;
 GRANT INSERT ON AdventureWorks2012.Person.Address to HRPerson;
 GRANT SELECT ON AdventureWorks2012.Person.AddressType to HRPerson;
 
