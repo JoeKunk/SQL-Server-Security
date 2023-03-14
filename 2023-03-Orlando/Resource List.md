@@ -8,3 +8,8 @@ sys.fn_builtin_permissions (Transact-SQL)
 AdventureWorks2012 Sample Database - used in demos
     https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms
 
+
+BikeStores sample database - run scripts to create the database
+    Overview page: https://www.sqlservertutorial.net/sql-server-sample-database/
+    Download Link: https://www.sqlservertutorial.net/wp-content/uploads/SQL-Server-Sample-Database.zip
+
