@@ -1,4 +1,4 @@
--- Remove HRPerson user from database and server to demo new permissions
+-- Remove HRPerson user from database and server to reset permissions
 USE AdventureWorks2012;
 DROP USER IF EXISTS HRPerson  -- drop from database
 IF EXISTS (SELECT 1 FROM master.sys.server_principals WHERE name = 'HRPerson')
@@ -6,11 +6,11 @@ BEGIN
     DROP LOGIN HRPerson -- drop from server
 END
 
--- Add HPRerson SQL Login to the server, add to AdventureWorks2012 database
-CREATE LOGIN HRPerson WITH Password='demo', DEFAULT_DATABASE = [AdventureWorks2012]
+-- Add HRPerson SQL Login to the server, add to AdventureWorks2012 database
+CREATE LOGIN HRPerson WITH Password='demo$1234', DEFAULT_DATABASE = [AdventureWorks2012]
 CREATE USER HRPerson for LOGIN HRPerson
 
--- Create the database role
+-- Create the database role, show in object explorer
 DROP ROLE IF EXiSTS xrHR_Address  -- db roles can not belong to schemas
 CREATE ROLE xrHR_Address AUTHORIZATION [dbo]
 GO
@@ -21,16 +21,18 @@ GRANT
     ON Person.Address TO xrHR_Address
 GO
 
--- Show that HRPerson cannot select from Person.Address table
+-- Show that HRPerson cannot select from Person.Address table 
+-- since not a member of the db role
 EXECUTE AS LOGIN = 'HRPerson';  
 SELECT * FROM Person.Address
 REVERT
 GO
 
+-- Now add HRPerson as a member of the db role & show in object explorer
 ALTER ROLE xrHR_Address ADD MEMBER HRPerson
 GO
 
--- Show that HRPerson NOW can select from Person.Address table
+-- Show that HRPerson now can select from Person.Address table
 EXECUTE AS LOGIN = 'HRPerson'; 
 SELECT * FROM Person.Address
 REVERT
@@ -44,7 +46,8 @@ SELECT DP1.name AS DatabaseRoleName, DP2.name AS DatabaseUserName
 WHERE DP1.type = 'R'
 ORDER BY DP1.name;  
 
--- show permissions using 'View DB Permissions Advanced' script in SSMS
+-- show permissions the stored procedure we created in Script 02
+EXECUTE dbo.ListPermissions
 
 -- Assign permissions to both the user and to the roles to see the difference
 REVOKE SELECT ON AdventureWorks2012.Person.Address to HRPerson;
@@ -61,9 +64,10 @@ GRANT SELECT
         , [StateProvinceID], [PostalCode],[ModifiedDate])
     TO xrHR_Address;
 
--- show permissions using 'View DB Permissions Advanced' script in SSMS
+-- Let's see the permissions change
+EXECUTE dbo.ListPermissions
 
--- Remove the user from the database, show removed from db Role also
+-- Remove HRPerson from the database, show removed from xrHR_Address db Role in object explorer
 USE AdventureWorks2012;
 DROP USER IF EXISTS HRPerson  -- drop from database
 IF EXISTS (SELECT 1 FROM master.sys.server_principals WHERE name = 'HRPerson')
@@ -71,5 +75,6 @@ BEGIN
     DROP LOGIN HRPerson -- drop from server
 END
 
--- show permissions using 'View DB Permissions Advanced' script in SSMS
+Execute dbo.ListPermissions 'AdventureWorks2012'
+
 -- Database role still exists but no permissions so not included in the list
