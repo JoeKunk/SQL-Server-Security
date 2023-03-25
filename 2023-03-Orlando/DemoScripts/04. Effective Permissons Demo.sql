@@ -9,11 +9,6 @@
 USE AdventureWorks2012;
 GO
 
--- What objects can be assigned permissions?
-SELECT DISTINCT class_desc FROM fn_builtin_permissions(default)  
-    ORDER BY class_desc;  
-GO  
-
 -- What are my permissions on the server?
 SELECT * FROM fn_my_permissions(NULL, 'SERVER');  
 
