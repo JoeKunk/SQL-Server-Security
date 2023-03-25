@@ -1,3 +1,9 @@
+/*      AUTHOR: Joseph Kunk, Senior Software Architect at Dewpoint, Lansing MI USA. 
+                LinkedIn:	joe-kunk-b926091
+				Twitter:	@joekunk
+				Mastodon:	@joekunk@techhub.social
+				Email:		joekunk@gmail.com
+*/
 
 -- Remove HRPerson user from database and server to demo new permissions
 USE AdventureWorks2012;
@@ -11,7 +17,7 @@ END
 CREATE LOGIN HRPerson WITH Password='demo$1234', DEFAULT_DATABASE = [AdventureWorks2012]
 CREATE USER HRPerson for LOGIN HRPerson
 
--- Don't do this, should grant to a role instead
+-- For demo only, should grant to a db role instead
 GRANT SELECT, INSERT, DELETE ON AdventureWorks2012.Person.Address TO HRPerson;
 
 --------------- List effective permissions of HRPerson in script 04 ---------------

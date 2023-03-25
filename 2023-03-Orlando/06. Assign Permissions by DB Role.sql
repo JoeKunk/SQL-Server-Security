@@ -1,3 +1,10 @@
+/*      AUTHOR: Joseph Kunk, Senior Software Architect at Dewpoint, Lansing MI USA. 
+                LinkedIn:	joe-kunk-b926091
+				Twitter:	@joekunk
+				Mastodon:	@joekunk@techhub.social
+				Email:		joekunk@gmail.com
+*/
+
 -- Remove HRPerson user from database and server to reset permissions
 USE AdventureWorks2012;
 DROP USER IF EXISTS HRPerson  -- drop from database

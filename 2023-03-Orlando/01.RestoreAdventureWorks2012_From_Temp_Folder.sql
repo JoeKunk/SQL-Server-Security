@@ -1,3 +1,10 @@
+/*      AUTHOR: Joseph Kunk, Senior Software Architect at Dewpoint, Lansing MI USA. 
+                LinkedIn:	joe-kunk-b926091
+				Twitter:	@joekunk
+				Mastodon:	@joekunk@techhub.social
+				Email:		joekunk@gmail.com
+*/
+
 -- Restore the sample database so can see all security changes live
 
 USE [master]

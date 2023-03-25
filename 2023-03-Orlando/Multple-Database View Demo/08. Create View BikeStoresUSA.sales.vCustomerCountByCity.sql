@@ -13,6 +13,6 @@ CREATE VIEW sales.vCustomerCountByCity AS
 	UNION
 	
 	Select 'CAN' as Country, City, count(customer_id) as [Customer Count] 
-	FROM BikeStoresUSA.Sales.Customers 
+	FROM BikeStoresCAN.Sales.Customers 
 	GROUP BY City
 	

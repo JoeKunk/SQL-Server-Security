@@ -1,4 +1,0 @@
-Select * from BikeStores;
-
-
--- TBD
