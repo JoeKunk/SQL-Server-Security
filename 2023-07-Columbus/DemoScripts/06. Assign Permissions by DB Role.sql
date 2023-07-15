@@ -39,7 +39,8 @@ GO
 ALTER ROLE xrHR_Address ADD MEMBER HRPerson
 GO
 
--- Show that HRPerson now can select from Person.Address table
+-- Show that HRPerson is a member of the DB Role in Object Explorer
+-- Show that HRPerson can now SELECT from Person.Address table
 EXECUTE AS LOGIN = 'HRPerson'; 
 SELECT * FROM Person.Address
 REVERT
@@ -54,7 +55,7 @@ WHERE DP1.type = 'R'
 ORDER BY DP1.name;  
 
 -- show permissions the stored procedure we created in Script 02
-EXECUTE dbo.ListPermissions
+EXECUTE dbo.ListPermissions 'AdventureWorks2012'
 
 -- Assign permissions to both the user and to the roles to see the difference
 REVOKE SELECT ON AdventureWorks2012.Person.Address to HRPerson;
@@ -72,7 +73,8 @@ GRANT SELECT
     TO xrHR_Address;
 
 -- Let's see the permissions change
-EXECUTE dbo.ListPermissions
+-- Show how can see permissions assigned directly vs from the DB Role
+EXECUTE dbo.ListPermissions 'AdventureWorks2012'
 
 -- Remove HRPerson from the database, show removed from xrHR_Address db Role in object explorer
 USE AdventureWorks2012;
