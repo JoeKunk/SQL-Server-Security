@@ -1,14 +1,11 @@
-/*      AUTHOR: Joseph Kunk, Senior Software Architect at Dewpoint, Lansing MI USA. 
-                LinkedIn:	joe-kunk-b926091
-				Twitter:	@joekunk
-				Mastodon:	@joekunk@techhub.social
-				Email:		joekunk@gmail.com
-*/
+/*
+DEMO 4
 
-/*      Stored procedures are executed under the security context of the calling user 
-		which could have a compromised login
+       Stored procedures are executed under the security context 
+	   of the calling user which could have a compromised login
         
 		Better to execute them under a user that has no login
+		You can breach as login that does not exist
         
 		In this way, minimum permissions are assigned to the stored procedure, not the caller
 		No need to grant permissions to the caller just so he/she can run the stored procedure
@@ -39,7 +36,7 @@ ALTER ROLE xrProduction_Schema_Updaters ADD MEMBER ProcRunner;
 -- Test to verify that ProcRunner can view data in the Production schema
 -- Note that impersonating a user, not a login
 EXECUTE AS USER = 'ProcRunner';
-SELECT TOP 10 * FROM [AdventureWorks2012].[Production].[ProductReview];
+SELECT TOP 10 * FROM [Production].[ProductReview];
 REVERT;
 GO
 
@@ -50,51 +47,51 @@ WITH EXECUTE AS 'ProcRunner'
 AS
 BEGIN
 	SET NOCOUNT ON;
-	SELECT TOP 10 * FROM [AdventureWorks2012].[Production].[ProductReview];
+	SELECT TOP 10 * FROM [Production].[ProductReview];
 END
 GO
 
--- Let's quickly ensure HRPerson and xrHR_Address is set up properly
-USE AdventureWorks2012;
-DROP USER IF EXISTS HRPerson  -- drop from database
-IF EXISTS (SELECT 1 FROM master.sys.server_principals WHERE name = 'HRPerson') BEGIN
-    DROP LOGIN HRPerson -- drop from server
+-- Let's quickly ensure PlantManager and xrPlantMgmt is set up properly
+DROP USER IF EXISTS PlantManager  -- drop from database
+IF EXISTS (SELECT 1 FROM master.sys.server_principals WHERE name = 'PlantManager') BEGIN
+    DROP LOGIN PlantManager -- drop from server
 END
-CREATE LOGIN HRPerson WITH Password='demo$1234', DEFAULT_DATABASE = [AdventureWorks2012]
-CREATE USER HRPerson for LOGIN HRPerson
-DROP ROLE IF EXiSTS xrHR_Address  -- db roles can not belong to schemas
-CREATE ROLE xrHR_Address AUTHORIZATION [dbo]
-ALTER ROLE xrHR_Address ADD MEMBER HRPerson
-GRANT DELETE, INSERT, SELECT, UPDATE, VIEW DEFINITION ON Person.Address TO xrHR_Address
+CREATE LOGIN PlantManager WITH Password='demo$1234', DEFAULT_DATABASE = [AdventureWorks2012]
+CREATE USER PlantManager for LOGIN PlantManager
 
--- HRPerson cannot select from the ProductReview table directly in Production schema
+DROP ROLE IF EXiSTS xrPlantMgmt  -- db roles can not belong to schemas
+CREATE ROLE xrPlantMgmt AUTHORIZATION [dbo]
+GRANT DELETE, INSERT, SELECT, UPDATE, VIEW DEFINITION ON Person.Address TO xrPlantMgmt
+ALTER ROLE xrPlantMgmt ADD MEMBER PlantManager
+
+-- PlantManager cannot select from the ProductReview table directly in Production schema
 -- The SELECT permission was denied
-EXECUTE AS LOGIN = 'HRPerson';
-    Select top 10 * from [AdventureWorks2012].[Production].[ProductReview];
+EXECUTE AS LOGIN = 'PlantManager';
+    Select top 10 * from [Production].[ProductReview];
 REVERT;
 
 -- But can see Product Reviews if granted permission to execute the Stored Procedure
 -- Because stored procedure runs as ProcRunner user which can select any table in Production schema
-GRANT EXECUTE on xspGetProductReviews to xrHR_Address
-EXECUTE AS LOGIN = 'HRPerson';
+GRANT EXECUTE on xspGetProductReviews to xrPlantMgmt
+EXECUTE AS LOGIN = 'PlantManager';
     Execute xspGetProductReviews;
 REVERT;
 
 -- But wait there is more!
 -- What if we need to do one or steps as the caller identity within the stored procedure?
 
--- ProcRunner cannot select from Person.Address but HRPerson can
--- HRPerson cannot select from [Production].[ProductReview] but ProcRunner can
+-- ProcRunner cannot select from Person.Address but PlantManager can
+-- PlantManager cannot select from [Production].[ProductReview] but ProcRunner can
 -- Let's run parts of the stored procedure under each login to return both queries
 
--- Show that ProcRunner cannot select from Person.Address
+-- ProcRunner cannot select from Person.Address
 EXECUTE AS USER = 'ProcRunner';
     Select TOP 10 SYSTEM_USER, * FROM Person.Address;
 REVERT;
 GO
 
--- Show that HRPerson cannot select from [Production].[ProductReview]
-EXECUTE AS USER = 'HRPerson';
+-- PlantManager cannot select from [Production].[ProductReview]
+EXECUTE AS USER = 'PlantManager';
     Select TOP 10 SYSTEM_USER, * FROM [Production].[ProductReview];
 REVERT;
 GO
@@ -104,25 +101,28 @@ WITH EXECUTE AS 'ProcRunner'
 AS
 BEGIN
 	SET NOCOUNT ON;
-	SELECT TOP 10 USER_NAME(), * FROM [AdventureWorks2012].[Production].[ProductReview];
-        EXECUTE AS CALLER;  -- HRPerson
+	SELECT TOP 10 USER_NAME(), * FROM [Production].[ProductReview];
+        EXECUTE AS CALLER;  -- PlantManager
             Select TOP 10 SYSTEM_USER, * FROM Person.Address
         REVERT;
 END
 GO
 
--- Can see results from both queries since called by HRPerson
-EXECUTE AS LOGIN = 'HRPerson';
+-- Can see results from both queries since called by PlantManager
+EXECUTE AS LOGIN = 'PlantManager';
     Execute xspGetProductReviews;
 REVERT;
 GO
 
--- But can not see results from both queries when called by ProcRunner
+--	Interesting Fact:
+--	Even though sproc can run under ProcRunner permissions, 
+--	ProcRunner cannot run sproc directly
 EXECUTE AS USER = 'ProcRunner';
     Execute xspGetProductReviews;
 REVERT;
 GO
 
+-- ProcRunner must be granted permission to call the sproc
 GRANT EXECUTE on xspGetProductReviews to ProcRunner;
 EXECUTE AS USER = 'ProcRunner';
     Execute xspGetProductReviews;

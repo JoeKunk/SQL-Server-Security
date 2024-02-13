@@ -1,11 +1,11 @@
-/*      AUTHOR: Joseph Kunk, Senior Software Architect at Dewpoint, Lansing MI USA. 
-                LinkedIn:	joe-kunk-b926091
-				Twitter:	@joekunk
-				Mastodon:	@joekunk@techhub.social
-				Email:		joekunk@gmail.com
+/*
+SETUP
+
 */
 
 -- Restore the sample database so can see all security changes live
+
+-- Create database AdventureWorks manually in SSMS first
 
 USE [master]
 ALTER DATABASE [AdventureWorks2012] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
