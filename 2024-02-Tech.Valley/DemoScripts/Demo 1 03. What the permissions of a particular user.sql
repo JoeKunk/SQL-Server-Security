@@ -26,7 +26,7 @@ EXECUTE AS LOGIN = 'USER1';
 
 		SELECT 'DATABASE', * FROM fn_my_permissions (NULL, 'DATABASE');  
 
-		SELECT 'TABLE', * FROM fn_my_permissions('Sales.vIndividualCustomer', 'OBJECT')   
+		SELECT 'VIEW', * FROM fn_my_permissions('Sales.vIndividualCustomer', 'OBJECT')   
 			ORDER BY subentity_name, permission_name;
 
 		SELECT 'TABLE', * FROM fn_my_permissions('[Production].[Product]', 'OBJECT')   

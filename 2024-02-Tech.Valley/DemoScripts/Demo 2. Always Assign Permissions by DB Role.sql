@@ -58,4 +58,4 @@ ORDER BY DP1.name;
 EXECUTE dbo.ListPermissions
 
 -- NOTE:
---		Dropping the user from the databae removes all the permissions
+--		Dropping the user from the database removes all the permissions
