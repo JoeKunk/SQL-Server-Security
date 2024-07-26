@@ -33,9 +33,13 @@ GO
 -- Grant admin rights on the Schema to the xrAuditors_Admin db role
 GRANT ALTER, CONTROL, TAKE OWNERSHIP ON SCHEMA::Auditors TO xrAuditors_Admin
 
+-- At first glance below, it looks like I am granting permissins to create anywhere in the DB
+-- But I am not! 
+
 -- These permissions cannot be granted to a schema, must be granted to the db role
 -- No concern - does not grant this permissions database-wide as it appears
 -- Requires ALTER or CONTROL permission as well to be able to create an object
+-- which has only been granted to schema Auditors
 GRANT CREATE TABLE, CREATE VIEW, CREATE PROCEDURE, CREATE FUNCTION TO xrAuditors_Admin 
 GO   
 
@@ -73,24 +77,24 @@ GO
 
 -- Auditor cannot create a table in Auditors schema
 EXECUTE AS LOGIN = 'Auditor'
-DROP TABLE IF EXISTS Auditors.HelloAuditorsSchema
-CREATE TABLE Auditors.HelloAuditorsSchema (
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Message] [varchar](100) NULL
-) ON [PRIMARY]
-GO
+		DROP TABLE IF EXISTS Auditors.HelloAuditorsSchema
+		CREATE TABLE Auditors.HelloAuditorsSchema (
+			[ID] [int] IDENTITY(1,1) NOT NULL,
+			[Message] [varchar](100) NULL
+		) ON [PRIMARY]
+		GO
 REVERT;
 GO
 
 
--- AuditManager cannot create a table in Auditors schema
+-- AuditManager can create a table in Auditors schema
 EXECUTE AS LOGIN = 'AuditManager'
-DROP TABLE IF EXISTS Auditors.HelloAuditorsSchema
-CREATE TABLE Auditors.HelloAuditorsSchema (
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Message] [varchar](100) NULL
-) ON [PRIMARY]
-GO
+		DROP TABLE IF EXISTS Auditors.HelloAuditorsSchema
+		CREATE TABLE Auditors.HelloAuditorsSchema (
+			[ID] [int] IDENTITY(1,1) NOT NULL,
+			[Message] [varchar](100) NULL
+		) ON [PRIMARY]
+		GO
 REVERT;
 GO
 
@@ -98,11 +102,11 @@ GO
 -- AuditManager can NOT create a table in any other schema
 Use AdventureWorks2012;
 EXECUTE AS LOGIN = 'AuditManager'
-DROP TABLE IF EXISTS HumanResources.HelloPersonSchema
-CREATE TABLE HumanResources.HelloPersonSchema (
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Message] [varchar](100) NULL
-) ON [PRIMARY]
-GO
+		DROP TABLE IF EXISTS HumanResources.HelloPersonSchema
+		CREATE TABLE HumanResources.HelloPersonSchema (
+			[ID] [int] IDENTITY(1,1) NOT NULL,
+			[Message] [varchar](100) NULL
+		) ON [PRIMARY]
+		GO
 REVERT
 GO

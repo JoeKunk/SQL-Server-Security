@@ -12,7 +12,7 @@ DEMO 4
 */
 
 
--- No need for CREATE LOGIN statement
+-- ** No need ** for CREATE LOGIN statement
 -- Directly create the user in the database
 Use AdventureWorks2012;
 DROP USER IF EXISTS ProcRunner;
@@ -51,7 +51,7 @@ BEGIN
 END
 GO
 
--- Let's quickly ensure PlantManager and xrPlantMgmt is set up properly
+-- Let's quickly ensure PlantManager is set up properly
 DROP USER IF EXISTS PlantManager  -- drop from database
 IF EXISTS (SELECT 1 FROM master.sys.server_principals WHERE name = 'PlantManager') BEGIN
     DROP LOGIN PlantManager -- drop from server
@@ -59,6 +59,7 @@ END
 CREATE LOGIN PlantManager WITH Password='demo$1234', DEFAULT_DATABASE = [AdventureWorks2012]
 CREATE USER PlantManager for LOGIN PlantManager
 
+-- Let's quickly ensure xrPlantMgmt is set up properly
 DROP ROLE IF EXiSTS xrPlantMgmt  -- db roles can not belong to schemas
 CREATE ROLE xrPlantMgmt AUTHORIZATION [dbo]
 GRANT DELETE, INSERT, SELECT, UPDATE, VIEW DEFINITION ON Person.Address TO xrPlantMgmt
@@ -78,19 +79,21 @@ EXECUTE AS LOGIN = 'PlantManager';
 REVERT;
 
 -- But wait there is more!
+
 -- What if we need to do one or steps as the caller identity within the stored procedure?
+-- A particular user has extra steps to do but don't want to create an entirely different stored procedure.
 
 -- ProcRunner cannot select from Person.Address but PlantManager can
 -- PlantManager cannot select from [Production].[ProductReview] but ProcRunner can
 -- Let's run parts of the stored procedure under each login to return both queries
 
--- ProcRunner cannot select from Person.Address
+-- ProcRunner cannot select from Person.Address but PlantManager can
 EXECUTE AS USER = 'ProcRunner';
     Select TOP 10 SYSTEM_USER, * FROM Person.Address;
 REVERT;
 GO
 
--- PlantManager cannot select from [Production].[ProductReview]
+-- PlantManager cannot select from [Production].[ProductReview] but ProcRunner can
 EXECUTE AS USER = 'PlantManager';
     Select TOP 10 SYSTEM_USER, * FROM [Production].[ProductReview];
 REVERT;
@@ -102,6 +105,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	SELECT TOP 10 USER_NAME(), * FROM [Production].[ProductReview];
+		-- NOTE: EXECUTE AS CALLER statement
         EXECUTE AS CALLER;  -- PlantManager
             Select TOP 10 SYSTEM_USER, * FROM Person.Address
         REVERT;
@@ -116,7 +120,7 @@ GO
 
 --	Interesting Fact:
 --	Even though sproc can run under ProcRunner permissions, 
---	ProcRunner cannot run sproc directly
+--	ProcRunner cannot run sproc directly - enhances security
 EXECUTE AS USER = 'ProcRunner';
     Execute xspGetProductReviews;
 REVERT;

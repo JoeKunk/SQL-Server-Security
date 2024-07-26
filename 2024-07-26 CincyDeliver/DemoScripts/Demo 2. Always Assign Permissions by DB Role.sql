@@ -15,7 +15,7 @@ IF EXISTS (SELECT 1 FROM master.sys.server_principals WHERE name = 'HRPerson')
 CREATE LOGIN HRPerson WITH Password='demo$1234', DEFAULT_DATABASE = [AdventureWorks2012]
 CREATE USER HRPerson for LOGIN HRPerson
 
--- Note: db roles can not belong to spedific schemasDROP ROLE IF EXiSTS xrHR_Address 
+-- Note: db roles can not belong to spedific schemas
 DROP ROLE IF EXISTS xrHR_Address
 CREATE ROLE xrHR_Address AUTHORIZATION [dbo]
 GO

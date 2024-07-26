@@ -7,15 +7,17 @@ SETUP
 
 -- Create database AdventureWorks manually in SSMS first
 
+-- Manually create a default AdventureWorks2012 database
+
 USE [master]
 ALTER DATABASE [AdventureWorks2012] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
 
 RESTORE DATABASE [AdventureWorks2012] 
 	FROM  DISK = N'C:\Temp\AdventureWorks2012.bak' WITH  FILE = 1  
 	,MOVE N'AdventureWorks2012' 
-		TO N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\AdventureWorks2012.mdf'
+		TO N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\AdventureWorks2012.mdf'
 	,MOVE N'AdventureWorks2012_log' 
-		TO N'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\AdventureWorks2012_log.ldf'
+		TO N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\AdventureWorks2012_log.ldf'
 	,NOUNLOAD
 	,REPLACE
 	,STATS = 10
